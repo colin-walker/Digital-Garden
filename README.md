@@ -20,3 +20,5 @@ CREATE TABLE `pref_garden` (
 config.php will also need the following line added (again replace pref):
 
 `define('GARDEN', 'pref_garden');`
+
+The garden files should be uploaded to /garden/
