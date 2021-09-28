@@ -99,29 +99,29 @@ if($rows > 5){
   		while($row = $result->fetch_assoc()) {
     		$ID = $row["ID"];
     		$title = $row["Title"];
-  			$content = stripslashes($row["Content"]);
-  			$raw = $content;
-  			$content = filters($content);
+  		$content = stripslashes($row["Content"]);
+  		$raw = $content;
+  		$content = filters($content);
   			
-  			$post_array = explode("\n", $content);
+  		$post_array = explode("\n", $content);
 	    	$size = sizeof($post_array);
-			if (substr($post_array[0], 0, 2) == "# ") {
-				$length = strlen($post_array[0]);
-				$required = $length - 2;
-				$post_title = substr($post_array[0], 2, $required);
-				$content = '';
-				for ($i = 2; $i < $size; $i++) {
-					$content .= $post_array[$i];
-				}
+		if (substr($post_array[0], 0, 2) == "# ") {
+			$length = strlen($post_array[0]);
+			$required = $length - 2;
+			$post_title = substr($post_array[0], 2, $required);
+			$content = '';
+			for ($i = 2; $i < $size; $i++) {
+				$content .= $post_array[$i];
 			}
+		}
 
-			$Parsedown = new ParsedownExtra();
-			$content = $Parsedown->text($content);
+		$Parsedown = new ParsedownExtra();
+		$content = $Parsedown->text($content);
 			
-			$content = str_replace('@@', '<a><span style="float: left; margin-right: 8px;">#</span></a>', $content);
+		$content = str_replace('@@', '<a><span style="float: left; margin-right: 8px;">#</span></a>', $content);
 
-            $pattern = "/(?<!&|\'|\#|\)|\||\.|\/|\[|-|=|\")(?<=[a-z]|[A-Z]|\(|\s)$query(?![^<]*\>)(?!\/|\"\>)/i";
-            $replace = '<span class="result">' . stripslashes($query) . '</span>';
+            	$pattern = "/(?<!&|\'|\#|\)|\||\.|\/|\[|-|=|\")(?<=[a-z]|[A-Z]|\(|\s)$query(?![^<]*\>)(?!\/|\"\>)/i";
+            	$replace = '<span class="result">' . stripslashes($query) . '</span>';
 			$content = preg_replace($pattern, $replace, $content);
 
 			echo '<article class="h-entry" style="margin-bottom: 3em;"><div class="entry-content e-content" style="word-wrap: break-word;">';
