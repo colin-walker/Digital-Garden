@@ -46,8 +46,10 @@ if ( (isset($_POST['s']) && $_POST['s'] != '' ) || (isset($_GET['s']) && $_GET['
 
 	if (isset($_POST['s'])) {
 		$query = $connsel->real_escape_string($_POST['s']);
+		$source = $_POST['source'];
 	} else {
 		$query = $connsel->real_escape_string($_GET['s']);
+		$source = $_GET['source'];
 	}
 
     $query = strtolower($query);
@@ -100,23 +102,31 @@ if($rows > 5){
   			$content = stripslashes($row["Content"]);
   			$raw = $content;
   			$content = filters($content);
+  			
+  			$post_array = explode("\n", $content);
+	    	$size = sizeof($post_array);
+			if (substr($post_array[0], 0, 2) == "# ") {
+				$length = strlen($post_array[0]);
+				$required = $length - 2;
+				$post_title = substr($post_array[0], 2, $required);
+				$content = '';
+				for ($i = 2; $i < $size; $i++) {
+					$content .= $post_array[$i];
+				}
+			}
 
 			$Parsedown = new ParsedownExtra();
 			$content = $Parsedown->text($content);
-
-			$content = substr($content, 3);
-
-			if (substr($content, -3) == '<p>') {
-				$content = substr($content, 0, -3);
-			}
+			
+			$content = str_replace('@@', '<a><span style="float: left; margin-right: 8px;">#</span></a>', $content);
 
             $pattern = "/(?<!&|\'|\#|\)|\||\.|\/|\[|-|=|\")(?<=[a-z]|[A-Z]|\(|\s)$query(?![^<]*\>)(?!\/|\"\>)/i";
             $replace = '<span class="result">' . stripslashes($query) . '</span>';
 			$content = preg_replace($pattern, $replace, $content);
 
-			echo '<article class="h-entry"><div class="entry-content e-content" style="word-wrap: break-word;">';
+			echo '<article class="h-entry" style="margin-bottom: 3em;"><div class="entry-content e-content" style="word-wrap: break-word;">';
 			echo '<div id="post' . $ID . '">';
-			echo '<p class="section"><a class="u-url search-u-url" name="p' . $ID . '" href="' . BASE_URL . '/garden/page.php?t=' . $title . '" class="postCount">#</a>' . $content . "</p>";
+			echo '<p class="section"><a class="u-url search-u-url" name="p' . $ID . '" href="' . BASE_URL . '/garden/page.php?t=' . $title . '" class="postCount"># ' . $title . '</a></p><p>' . $content . "</p>";
 			echo '</div><!-- .entry-content --></article>';
 		}
 
